@@ -1,0 +1,9 @@
+{
+  "name": "nas-admin",
+  "version": "0.0.0",
+  "description": "NasAdmin",
+  "main": "server.js",
+  "author": {
+    "name": "zhangtan"
+  }
+}
