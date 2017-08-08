@@ -4,6 +4,9 @@
   "description": "NasAdmin",
   "main": "server.js",
   "author": {
-    "name": "zhangtan"
+    "name": "Lensual"
+  },
+  "dependencies": {
+    "express": "^4.15.4"
   }
 }
