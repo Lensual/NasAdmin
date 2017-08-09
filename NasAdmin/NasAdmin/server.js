@@ -3,22 +3,17 @@ var express = require('express');
 var app = express();
 var fs = require("fs");
 
-app.get('/api/readdir/*', function (req, res) {
+//¶ÁÎÄ¼þ¼Ð
+app.get('/api/readDir', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     try {
-        req.path
-        res.end(fs.readdirSync(req.path));
-
+        res.end(JSON.stringify(fs.readdirSync(req.query.path)));
     } catch (e) {
-        res.end(String(e));
+        res.end((JSON.stringify(e)));
     }
-
-    //fs.readFile(__dirname + "/" + "users.json", 'utf8', function (err, data) {
-    //    console.log(data);
-    //    res.end(data);
-    //});
 })
 
+//API INFO
 app.get('/api', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     var str ="";
@@ -33,6 +28,7 @@ app.get('/api', function (req, res) {
     res.end(str);
 })
 
+//Listen
 var server = app.listen(1337, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
 })
