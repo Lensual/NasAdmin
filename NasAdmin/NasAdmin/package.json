@@ -6,5 +6,7 @@
   "author": {
     "name": "Lensual"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.15.4"
+  }
 }
