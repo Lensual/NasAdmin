@@ -1,9 +1,12 @@
 'use strict';
-var express = require('express');
-var app = express();
-var fs = require("fs");
-
 var config = require("./config.json");
+var log4js = require("log4js");
+log4js.configure(config.log4js);
+var express = require('express');
+var fs = require("fs");
+var app = express();
+
+log4js.getLogger("default").debug("helloworld");
 
 //Listen
 var server = app.listen(config.port,config.hostname, function () {

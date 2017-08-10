@@ -2,5 +2,23 @@
   "hostname": "localhost",
   "port": 1337,
   "https": false,
-  "log4js": {}
+  "log4js": {
+    "appenders": {
+      "console": { "type": "console" },
+      "file": {
+        "type": "dateFile",
+        "filename": "logs/default",
+        "pattern": "-yyyy-MM-dd.log",
+        "alwaysIncludePattern": true,
+        "maxLogSize": 1024,
+        "backups": 3
+      }
+    },
+    "categories": {
+      "default": {
+        "appenders": [ "console", "file" ],
+        "level": "DEBUG"
+      }
+    }
+  }
 }
