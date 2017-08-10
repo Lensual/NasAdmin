@@ -1,0 +1,6 @@
+﻿{
+  "hostname": "localhost",
+  "port": 1337,
+  "https": false,
+  "log4js": {}
+}
