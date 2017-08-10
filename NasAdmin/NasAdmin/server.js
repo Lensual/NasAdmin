@@ -2,11 +2,11 @@
 var config = require("./config.json");
 var log4js = require("log4js");
 log4js.configure(config.log4js);
+var logger = log4js.getLogger("default")
 var express = require('express');
 var fs = require("fs");
 var app = express();
 
-log4js.getLogger("default").debug("helloworld");
 
 //Listen
 var server = app.listen(config.port,config.hostname, function () {
@@ -20,7 +20,7 @@ app.get('/api/readDir', function (req, res) {
         res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
         res.end(str);
     } catch (e) {
-        //log
+        logger.error(e);
         res.writeHead(500, { 'Content-Type': 'text/plain;charset=utf-8' });
         res.end((JSON.stringify({ code: e.code, message: e.message, stack: e.stack })));
     }
