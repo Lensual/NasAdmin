@@ -18,7 +18,10 @@ var server = app.listen(config.port, config.hostname, function () {
 //读文件夹
 app.get("/api/readDir", function (req, res) {
     fs.readdir(req.query.path, (err, files) => {
-        ifErr(err, res);
+        if (err) {
+            doErr(err, res);
+            return;
+        }
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify(files));
     });
@@ -27,7 +30,10 @@ app.get("/api/readDir", function (req, res) {
 //重命名 剪切 !!注意耗时操作，需要设计异步api
 app.get("/api/rename", function (req, res) {
     fs.rename(req.query.oldPath, req.query.newPath, (err) => {
-        ifErr(err, res);
+        if (err) {
+            doErr(err, res);
+            return;
+        };
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ message: "success" }));
     });
@@ -36,12 +42,24 @@ app.get("/api/rename", function (req, res) {
 //复制 !!注意耗时操作，需要设计异步api
 app.get("/api/cp", function (req, res) {
     fs.stat(req.query.source, (err, stats) => {
-        if (stats.isFile) {
-
-        } else if (stats.isDirectory) {
-
-        } else {
-            //err
+        if (err) {
+            doErr(err, res);
+            return;
+        }
+        try {
+            if (stats.isFile) {
+                rs = fs.createReadStream(req.query.sourcePath);
+                ws = fs.createWriteStream(req.query.targetPath);
+                rs.pipe(ws);
+                //!!加个优化
+            } else if (stats.isDirectory) {
+                //!!读目录
+                //!!递归
+            } else {
+                //!!err
+            }
+        } catch (e) {
+            ifErr(err, res);
         }
     });
 
@@ -51,11 +69,14 @@ app.get("/api/cp", function (req, res) {
 
 
 
-    fs.read(req.query.oldPath, req.query.newPath, (err) => {
-        ifErr(err, res);
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ message: "success" }));
-    });
+    //fs.read(req.query.oldPath, req.query.newPath, (err) => {
+    //    if (err) {
+    //        doErr(err, res);
+    //        return;
+    //    }
+    //    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    //    res.end(JSON.stringify({ message: "success" }));
+    //});
 });
 
 
@@ -75,12 +96,9 @@ app.get("/api", function (req, res) {
     res.end(str);
 });
 
-//ifErr
-function ifErr(err, res) {
-    if (err) {
-        logger.error(err);
-        res.writeHead(500, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ message: err.message, stack: err.stack }));
-        return;
-    }
+//doErr
+function doErr(err, res) {
+    logger.error(err);
+    res.writeHead(500, { "Content-Type": "text/plain;charset=utf-8" });
+    res.end(JSON.stringify({ message: err.message, stack: err.stack }));
 }
