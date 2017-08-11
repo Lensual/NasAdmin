@@ -19,18 +19,31 @@ app.get("/api/readDir", function (req, res) {
         if (err) {
             logger.error(err);
             res.writeHead(500, { "Content-Type": "text/plain;charset=utf-8" });
-            res.end(JSON.stringify({ code: err.code, message: err.message, stack: err.stack }));
+            res.end(JSON.stringify({ message: err.message, stack: err.stack }));
+            return;
         }
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify(files));
     });
 });
 
-//剪切
+//重命名 剪切
+app.get("/api/rename", function (req, res) {
+    fs.rename(req.query.oldPath, req.query.newPath, (err) => {
+        if (err) {
+            logger.error(err);
+            res.writeHead(500, { "Content-Type": "text/plain;charset=utf-8" });
+            res.end(JSON.stringify({ code: err.code, message: err.message, stack: err.stack }));
+            return;
+        }
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ message: "success" }));
+    });
+});
 
 //复制
 
-//重命名
+
 
 
 //API INFO
