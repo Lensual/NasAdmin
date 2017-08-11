@@ -33,7 +33,7 @@ app.get("/api/rename", function (req, res) {
         if (err) {
             doErr(err, res);
             return;
-        };
+        };;
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ message: "success" }));
     });
@@ -46,21 +46,32 @@ app.get("/api/cp", function (req, res) {
             doErr(err, res);
             return;
         }
-        try {
-            if (stats.isFile) {
+        if (stats.isFile) {
+            try {
                 rs = fs.createReadStream(req.query.sourcePath);
                 ws = fs.createWriteStream(req.query.targetPath);
                 rs.pipe(ws);
                 //!!加个优化
-            } else if (stats.isDirectory) {
-                //!!读目录
-                //!!递归
-            } else {
-                //!!err
+            } catch (e) {
+                doErr(err, res);
+                return;
             }
-        } catch (e) {
-            ifErr(err, res);
+        } else if (stats.isDirectory) {
+            //!!读目录
+            fs.readdir(req.sourcePath, (err, files) => {
+                if (err) {
+                    doErr(err, res);
+                    return;
+                }
+                for (var file in files) {
+
+                }
+            });
+            //!!递归
+        } else {
+            //!!err
         }
+
     });
 
 
