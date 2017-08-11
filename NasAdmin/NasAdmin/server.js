@@ -1,34 +1,41 @@
-'use strict';
+"use strict";
 var config = require("./config.json");
 var log4js = require("log4js");
 log4js.configure(config.log4js);
-var logger = log4js.getLogger("default")
-var express = require('express');
+var logger = log4js.getLogger("default");
+var express = require("express");
 var fs = require("fs");
 var app = express();
 
 
 //Listen
-var server = app.listen(config.port,config.hostname, function () {
+var server = app.listen(config.port, config.hostname, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
-})
+});
 
 //读文件夹
-app.get('/api/readDir', function (req, res) {
-    try {
-        var str = JSON.stringify(fs.readdirSync(req.query.path));
-        res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
-        res.end(str);
-    } catch (e) {
-        logger.error(e);
-        res.writeHead(500, { 'Content-Type': 'text/plain;charset=utf-8' });
-        res.end((JSON.stringify({ code: e.code, message: e.message, stack: e.stack })));
-    }
-})
+app.get("/api/readDir", function (req, res) {
+    fs.readdir(req.query.path, (err, files) => {
+        if (err) {
+            logger.error(err);
+            res.writeHead(500, { "Content-Type": "text/plain;charset=utf-8" });
+            res.end(JSON.stringify({ code: err.code, message: err.message, stack: err.stack }));
+        }
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify(files));
+    });
+});
+
+//剪切
+
+//复制
+
+//重命名
+
 
 //API INFO
-app.get('/api', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+app.get("/api", function (req, res) {
+    res.writeHead(200, { "Content-Type": "text/plain" });
     var str = "";
     str += "req.baseUrl: " + req.baseUrl + "\r\n";
     str += "req.body: " + req.body + "\r\n";
@@ -39,4 +46,4 @@ app.get('/api', function (req, res) {
     str += "req.query: " + req.query + "\r\n";
     str += "req.subdomains: " + req.subdomains + "\r\n";
     res.end(str);
-})
+});
