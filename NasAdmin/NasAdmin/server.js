@@ -70,6 +70,8 @@ app.get("/api/cpSync", function (req, res) {
                 var ws = fs.createWriteStream(retarget);
             }
             rs.pipe(ws);
+            rs.close();
+            ws.close();
             //!!加个优化
         } else {
             //判断目标是否存在
@@ -77,7 +79,7 @@ app.get("/api/cpSync", function (req, res) {
                 //判断目标是不是目录
                 var t_stats = fs.statSync(targetPath);
                 if (t_stats.isFile()) {
-                    throw new Error("cannot overwrite non-directory \"" + targetPath + "\" with directory \"" + sourcePath + "\"");
+                    throw new Error("cannot overwrite non-directory \"" + path.normalize(targetPath) + "\" with directory \"" + path.normalize(sourcePath) + "\"");
                 }
                 //判断目标目录是否存在同名目录
                 if (!fs.existsSync(path.join(targetPath, path.basename(sourcePath)))) {
@@ -109,6 +111,20 @@ app.get("/api/cpSync", function (req, res) {
 
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
     res.end(JSON.stringify({ message: "success" }));
+});
+
+//删除
+app.get("/api/rmSync", function myfunction(req, res) {
+    removeSync(req.query.path);
+    function removeSync(path, recursive) {
+        if (!fs.existsSync(path)) {
+            logger.warn("No such file or directory \"" + path.normalize(path) + "\"")
+            return;
+        }
+        if (!recursive) {
+            fs
+        }
+    }
 });
 
 //API INFO
