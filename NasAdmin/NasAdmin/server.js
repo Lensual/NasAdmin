@@ -12,7 +12,8 @@ var path = require("path");
 
 
 //Listen
-var server = app.listen(config.port, config.hostname, function () {
+//hostname°ó¶¨bug
+var server = app.listen(config.port, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
 });
 
