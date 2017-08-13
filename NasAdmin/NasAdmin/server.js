@@ -7,7 +7,7 @@ var logger = log4js.getLogger("default");
 var express = require("express");
 var fs = require("fs");
 var app = express();
-var path = require("path")
+var path = require("path");
 //var child_process = require("child_process");
 
 
@@ -34,7 +34,7 @@ app.get("/api/mvSync", function (req, res) {
         if (err) {
             doErr(err, res);
             return;
-        };
+        }
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ message: "success" }));
     });
@@ -45,7 +45,7 @@ app.get("/api/mvSync", function (req, res) {
 app.get("/api/cpSync", function (req, res) {
     copySync(req.query.sourcePath, req.query.targetPath);
     function copySync(sourcePath, targetPath) { //有错误直接抛异常
-        var s_stats = fs.statSync(sourcePath)
+        var s_stats = fs.statSync(sourcePath);
 
         if (s_stats.isFile()) {
             //!!缺个判断目标
@@ -118,7 +118,7 @@ app.get("/api/rmSync", function myfunction(req, res) {
     removeSync(req.query.path);
     function removeSync(path, recursive) {
         if (!fs.existsSync(path)) {
-            logger.warn("No such file or directory \"" + path.normalize(path) + "\"")
+            logger.warn("No such file or directory \"" + path.normalize(path) + "\"");
             return;
         }
         if (!recursive) {
