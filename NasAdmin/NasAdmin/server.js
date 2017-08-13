@@ -43,7 +43,6 @@ app.get("/api/mvSync", function (req, res) {
 //复制 !!注意耗时操作，需要设计异步api
 //权限不跟随复制
 app.get("/api/cpSync", function (req, res) {
-    copySync(req.query.sourcePath, req.query.targetPath);
     function copySync(sourcePath, targetPath) { //有错误直接抛异常
         var s_stats = fs.statSync(sourcePath);
 
@@ -109,22 +108,36 @@ app.get("/api/cpSync", function (req, res) {
 
     }
 
+    copySync(req.query.sourcePath, req.query.targetPath);
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
     res.end(JSON.stringify({ message: "success" }));
 });
 
 //删除
-app.get("/api/rmSync", function myfunction(req, res) {
-    removeSync(req.query.path);
-    function removeSync(path, recursive) {
-        if (!fs.existsSync(path)) {
-            logger.warn("No such file or directory \"" + path.normalize(path) + "\"");
+app.get("/api/rmSync", function (req, res) {
+    function removeSync(sourcePath, recursive) {
+        if (!fs.existsSync(sourcePath)) {
+            logger.warn("No such file or directory \"" + path.normalize(sourcePath) + "\"");
             return;
         }
-        if (!recursive) {
-            fs
+        if (fs.statSync(sourcePath).isDirectory()) {
+            if (!recursive) {
+                fs.rmdirSync(sourcePath);
+            } else {
+                var files = fs.readdirSync(sourcePath);
+                files.forEach(function (file) {
+                    removeSync(path.join(sourcePath, file), true);
+                });
+                fs.rmdirSync(sourcePath);
+            }
+        } else {
+            fs.unlinkSync(sourcePath);
         }
     }
+
+    removeSync(req.query.path, req.query.recursive);
+    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    res.end(JSON.stringify({ message: "success" }));
 });
 
 //API INFO
