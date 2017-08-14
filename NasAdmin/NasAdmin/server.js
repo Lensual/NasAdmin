@@ -1,12 +1,19 @@
 "use strict";
-//require
+//include config & log4js
 var config = require("./config.json");
 var log4js = require("log4js");
 log4js.configure(config.log4js);
 var logger = log4js.getLogger("default");
+//include bodyParser
+var bodyParser = require("body-parser");
+//include express & cookie-parser & bodyParser
 var express = require("express");
-var fs = require("fs");
 var app = express();
+var cookieParser = require("cookie-parser");
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+//include other
+var fs = require("fs");
 var path = require("path");
 //var child_process = require("child_process");
 
@@ -154,6 +161,26 @@ app.get("/api", function (req, res) {
     str += "req.query: " + req.query + "\r\n";
     str += "req.subdomains: " + req.subdomains + "\r\n";
     res.end(str);
+});
+
+//Login
+app.post("/api/login", function (req, res) {
+    var users = JSON.parse(fs.readFileSync("users.json").toString());
+    var grant = null;
+    users.forEach(function (user) {
+        if (req.body.user == user.name && req.body.pwd == user.pwd) {
+            grant = user;
+        }
+    });
+    if (grant != null) {
+        logger.info("User login successful: \"" + grant.name + "\"");
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ message: "success" }));
+    } else {
+        logger.info("User login unsuccessful: \"" + req.body.user + "\"");
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ message: "invalid username/password" }));
+    }
 });
 
 //doErr
