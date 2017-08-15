@@ -1,8 +1,11 @@
 ﻿var express = require('express');
 var router = express.Router();
 
+var fs = require("fs");
+
+
 //读文件夹
-app.get("/api/readDirSync", function (req, res) {
+router.get("/readDirSync", function (req, res) {
     fs.readdir(req.query.path, (err, files) => {
         if (err) {
             doErr(err, res);
@@ -14,7 +17,7 @@ app.get("/api/readDirSync", function (req, res) {
 });
 
 //重命名 剪切 !!注意耗时操作，需要设计异步api
-app.get("/api/mvSync", function (req, res) {
+router.get("/mvSync", function (req, res) {
     fs.rename(req.query.oldPath, req.query.newPath, (err) => {
         if (err) {
             doErr(err, res);
@@ -27,7 +30,7 @@ app.get("/api/mvSync", function (req, res) {
 
 //复制 !!注意耗时操作，需要设计异步api
 //权限不跟随复制
-app.get("/api/cpSync", function (req, res) {
+router.get("/cpSync", function (req, res) {
     function copySync(sourcePath, targetPath) { //有错误直接抛异常
         var s_stats = fs.statSync(sourcePath);
 
@@ -99,7 +102,7 @@ app.get("/api/cpSync", function (req, res) {
 });
 
 //删除
-app.get("/api/rmSync", function (req, res) {
+router.get("/rmSync", function (req, res) {
     function removeSync(sourcePath, recursive) {
         if (!fs.existsSync(sourcePath)) {
             logger.warn("No such file or directory \"" + path.normalize(sourcePath) + "\"");
@@ -124,3 +127,5 @@ app.get("/api/rmSync", function (req, res) {
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
     res.end(JSON.stringify({ message: "success" }));
 });
+
+module.exports = router;

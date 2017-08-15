@@ -21,8 +21,10 @@ var path = require("path");
 //var child_process = require("child_process");
 
 //include module
-var apiFs = require("./apiFs");
 var apiAuth = require("./apiAuth");
+var apiFs = require("./apiFs");
+app.use("/api/auth", apiAuth);
+app.use("/api/fs", apiFs);
 
 
 //Listen
@@ -31,8 +33,6 @@ var server = app.listen(config.port, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
 });
 
-app.use("/api/auth", apiAuth);
-app.use("/api/fs", apiFs);
 
 //API INFO
 app.get("/api", function (req, res) {
@@ -49,25 +49,7 @@ app.get("/api", function (req, res) {
     res.end(str);
 });
 
-//Login
-app.post("/api/login", function (req, res) {
-    var users = JSON.parse(fs.readFileSync("./users.json").toString());
-    var grant = null;
-    users.forEach(function (user) {
-        if (req.body.user == user.name && req.body.pwd == user.pwd) {
-            grant = user;
-        }
-    });
-    if (grant != null) {
-        logger.info("User login successful: \"" + grant.name + "\"");
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ message: "success" }));
-    } else {
-        logger.info("User login unsuccessful: \"" + req.body.user + "\"");
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ message: "invalid username/password" }));
-    }
-});
+
 
 //doErr
 function doErr(err, res) {
