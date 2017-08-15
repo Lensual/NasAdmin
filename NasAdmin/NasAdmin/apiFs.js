@@ -1,4 +1,5 @@
-﻿require("./server.js");
+﻿var express = require('express');
+var router = express.Router();
 
 //读文件夹
 app.get("/api/readDirSync", function (req, res) {

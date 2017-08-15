@@ -4,20 +4,25 @@ var config = require("./config.json");
 var log4js = require("log4js");
 log4js.configure(config.log4js);
 var logger = log4js.getLogger("default");
+
 //include express & cookie-parser & bodyParse
 var express = require("express");
 var app = express();
+
+//middleware
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 //include other
 var fs = require("fs");
 var path = require("path");
 //var child_process = require("child_process");
+
 //include module
-require("./apiFs.js");
-require("./apiAuth.js");
+var apiFs = require("./apiFs");
+var apiAuth = require("./apiAuth");
 
 
 //Listen
@@ -26,6 +31,8 @@ var server = app.listen(config.port, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
 });
 
+app.use("/api/auth", apiAuth);
+app.use("/api/fs", apiFs);
 
 //API INFO
 app.get("/api", function (req, res) {
@@ -44,7 +51,7 @@ app.get("/api", function (req, res) {
 
 //Login
 app.post("/api/login", function (req, res) {
-    var users = JSON.parse(fs.readFileSync("users.json").toString());
+    var users = JSON.parse(fs.readFileSync("./users.json").toString());
     var grant = null;
     users.forEach(function (user) {
         if (req.body.user == user.name && req.body.pwd == user.pwd) {
