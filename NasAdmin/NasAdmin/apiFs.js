@@ -2,6 +2,7 @@
 var router = express.Router();
 
 var fs = require("fs");
+var path = require("path");
 
 
 //读文件夹

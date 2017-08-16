@@ -1,6 +1,16 @@
 ﻿var express = require('express');
 var router = express.Router();
 
+var fs = require("fs");
+
+//middleware
+var cookieParser = require("cookie-parser");
+app.use(cookieParser());
+var cookieSession = require('cookie-session')
+
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+
 //Login
 router.post("/login", function (req, res) {
     var users = JSON.parse(fs.readFileSync("./users.json").toString());
@@ -22,5 +32,12 @@ router.post("/login", function (req, res) {
 });
 
 //Logout
+
+//Auth
+route.use(function (req, res) {
+    if () {
+
+    }
+});
 
 module.exports = router;
