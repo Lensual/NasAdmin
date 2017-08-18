@@ -4,12 +4,13 @@ var router = express.Router();
 var fs = require("fs");
 
 //middleware
-var cookieParser = require("cookie-parser");
-app.use(cookieParser());
-var cookieSession = require('cookie-session')
-
+var session = require("express-session");
+router.use(session({
+    secret: 'recommand 128 bytes random string', // !!自定义
+    cookie: { maxAge: 60 * 1000 * 5 } //!! 自定义超时时间
+}));
 var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.urlencoded({ extended: false }));
 
 //Login
 router.post("/login", function (req, res) {
@@ -34,7 +35,7 @@ router.post("/login", function (req, res) {
 //Logout
 
 //Auth
-route.use(function (req, res) {
+route.use(function (req, res, next) {
     if () {
 
     }
