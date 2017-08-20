@@ -5,12 +5,9 @@ var log4js = require("log4js");
 log4js.configure(config.log4js);
 global.logger = log4js.getLogger("default");
 
-//include express & cookie-parser & bodyParse
+//include express & bodyParse
 var express = require("express");
 var app = express();
-
-//middleware
-
 
 //include module
 var apiAuth = require("./apiAuth");

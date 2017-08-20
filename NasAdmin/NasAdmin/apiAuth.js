@@ -15,30 +15,55 @@ router.use(bodyParser.urlencoded({ extended: false }));
 //Login
 router.post("/login", function (req, res) {
     var users = JSON.parse(fs.readFileSync("./users.json").toString());
-    var grant = null;
+    var grant;
     users.forEach(function (user) {
         if (req.body.user == user.name && req.body.pwd == user.pwd) {
             grant = user;
         }
     });
     if (grant != null) {
-        logger.info("User login successful: \"" + grant.name + "\"");
+        req.session.user = grant;
+        global.logger.info("User login successful: \"" + req.session.user.name + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ message: "success" }));
     } else {
-        logger.info("User login unsuccessful: \"" + req.body.user + "\"");
+        global.logger.info("User login unsuccessful: \"" + req.body.user + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ message: "invalid username/password" }));
-    }   
+    }
 });
 
 //Logout
+router.get("/logout", function (req, res) {
+    req.session.unset = 'destroy';
+    global.logger.info("User logout unsuccessful: \"" + req.session.user.name + "\"," + getClientIp(req));
+    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    res.end(JSON.stringify({ message: "success" }));
+})
+
+//sessionInfo
+router.get("/sessionInfo", function (req, res) {
+    global.logger.debug(JSON.stringify(req.session));
+    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    res.end(JSON.stringify(req.session));
+})
 
 //Auth
-route.use(function (req, res, next) {
-    if () {
-
+router.use(function (req, res, next) {
+    if (req.session.user) {
+        next();
+    } else {
+        global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ message: "Access denied, not login" }));
     }
 });
 
 module.exports = router;
+
+function getClientIp(req) {
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+};
