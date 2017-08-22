@@ -2,54 +2,53 @@
 <html>
 <head>
     <meta http-equiv="charset" content="utf8" />
-    <!--mdl-->
-    <link rel="stylesheet" href="./css/material.css">
+    <!-- mdl -->
     <script src="./js/material.js"></script>
+    <link rel="stylesheet" href="./css/material.css">
     <link rel="stylesheet" href="./font/iconfont/material-icons.css">
-    <!--custom-->
+    <!-- custom -->
     <link rel="stylesheet" type="text/css" href="./style.css" />
 </head>
 
 <body>
-    <div class="mdl-layout mdl-js-layout">
-        <header class="mdl-layout__header mdl-layout__header--scroll">
+    <!-- Simple header with scrollable tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="mdl-layout-title">Title</span>
-                <!-- Add spacer, to align navigation to the right -->
-                <div class="mdl-layout-spacer"></div>
-                <!-- Navigation -->
-                <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a>
-                </nav>
+                <span class="mdl-layout-title">NasAdmin</span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                <a href="#login" class="mdl-layout__tab is-active">Login</a>
+                <a href="#about" class="mdl-layout__tab">About</a>
             </div>
         </header>
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Title</span>
+            <!-- Links -->
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="">Link</a>
-                <a class="mdl-navigation__link" href="">Link</a>
-                <a class="mdl-navigation__link" href="">Link</a>
-                <a class="mdl-navigation__link" href="">Link</a>
+                <a class="mdl-navigation__link" href="">Login</a>
             </nav>
         </div>
         <main class="mdl-layout__content">
-            <div class="page-content">
-                <div class="login_dialog">
-                    <div class="dialog-card-wide mdl-card mdl-shadow--2dp">
+            <section class="mdl-layout__tab-panel is-active" id="login">
+                <div class="page-content">
+                    <!-- login_dialog -->
+                    <div class="login_dialog-card-wide mdl-card mdl-shadow--2dp">
                         <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Welcome</h2>
+                            <h2 class="mdl-card__title-text">Login</h2>
                         </div>
                         <div class="mdl-card__supporting-text">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            Mauris sagittis pellentesque lacus eleifend lacinia...
+                            Username
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            Password
                         </div>
                         <div class="mdl-card__actions mdl-card--border">
                             <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                                Get Started
+                                Login
                             </a>
                         </div>
                         <div class="mdl-card__menu">
@@ -59,9 +58,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
+            <section class="mdl-layout__tab-panel" id="about">
+                <div class="page-content"><h3>Hello World!</h3></div>
+            </section>
         </main>
     </div>
+
 
 </body>
 </html>

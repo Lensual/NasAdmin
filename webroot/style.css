@@ -1,20 +1,15 @@
 /*login_dialog*/
-.dialog-card-wide.mdl-card {
-    width: 100%;
+.login_dialog-card-wide.mdl-card {
+    width: 50%;
+    margin: 13.5% 25%;
 }
 
-.dialog-card-wide > .mdl-card__title {
+.login_dialog-card-wide > .mdl-card__title {
     color: #fff;
     height: 176px;
     background: url('https://getmdl.io/assets/demos/welcome_card.jpg') center / cover;
 }
 
-.dialog-card-wide > .mdl-card__menu {
+.login_dialog-card-wide > .mdl-card__menu {
     color: #fff;
 }
-
-.login_dialog {
-    margin: 13.5% 10%;
-
-}
-
