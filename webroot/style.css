@@ -1,7 +1,7 @@
 /*login_dialog*/
 .login_dialog-card-wide.mdl-card {
     width: 50%;
-    margin: 13.5% 25%;
+    margin: 10% 25%;
 }
 
 .login_dialog-card-wide > .mdl-card__title {
@@ -13,3 +13,13 @@
 .login_dialog-card-wide > .mdl-card__menu {
     color: #fff;
 }
+
+/*Username & Password*/
+.login_dialog-card-wide > form > .mdl-textfield {
+    width: 100%;
+    padding: 20px;
+}
+
+    .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
+        padding: 0px 20px;
+    }
