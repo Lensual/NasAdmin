@@ -13,7 +13,7 @@
 .login_dialog-card-wide > .mdl-card__title {
     color: #fff;
     height: 176px;
-    background: url('./img/welcome_card.jpg') center / cover;
+    background: url('../img/welcome_card.jpg') center / cover;
 }
 
 .login_dialog-card-wide > .mdl-card__menu {
@@ -29,5 +29,3 @@
     .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
         padding: 0px 20px;
     }
-
-
