@@ -1,4 +1,7 @@
 <!DOCTYPE HTML>
+<!--
+MDL Apache 2.0
+-->
 <html>
 <head>
     <meta http-equiv="charset" content="utf8" />
@@ -45,15 +48,13 @@
                             <div class="mdl-card__supporting-text">
                                 Please Login
                             </div>
-                            <!-- UserName -->
                             <form action="#">
+                                <!-- UserName -->
                                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <input class="mdl-textfield__input" type="text" id="username">
                                     <label class="mdl-textfield__label" for="sample1">Username...</label>
                                 </div>
-                            </form>
-                            <!-- Password -->
-                            <form action="#">
+                                <!-- Password -->
                                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <input class="mdl-textfield__input" type="text" id="password">
                                     <label class="mdl-textfield__label" for="sample1">Password...</label>
@@ -61,7 +62,7 @@
                             </form>
 
                             <div class="mdl-card__actions mdl-card--border">
-                                <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="loginDialog_btnLogin">
                                     Login
                                 </a>
                             </div>
@@ -79,5 +80,6 @@
             </section>
         </main>
     </div>
+    <script src="./js/function.js"></script>
 </body>
 </html>
