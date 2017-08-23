@@ -8,7 +8,6 @@
 
 .login_dialog-card-wide.mdl-card {
     width: 100%;
-    /*margin: 10% 25%;*/
 }
 
 .login_dialog-card-wide > .mdl-card__title {
@@ -30,8 +29,3 @@
     .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
         padding: 0px 20px;
     }
-
-
-@media screen and (min-resolution: 96dpi) {
-    
-}
