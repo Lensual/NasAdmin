@@ -1,7 +1,14 @@
 /*login_dialog*/
+.login_dialog {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 8px;
+
+}
+
 .login_dialog-card-wide.mdl-card {
-    width: 50%;
-    margin: 10% 25%;
+    width: 100%;
+    /*margin: 10% 25%;*/
 }
 
 .login_dialog-card-wide > .mdl-card__title {
@@ -23,3 +30,8 @@
     .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
         padding: 0px 20px;
     }
+
+
+@media screen and (min-resolution: 96dpi) {
+    
+}
