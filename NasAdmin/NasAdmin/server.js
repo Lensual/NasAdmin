@@ -9,6 +9,12 @@ global.logger = log4js.getLogger("default");
 var express = require("express");
 var app = express();
 
+//Cross Domin
+app.use(function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
+});
+
 //include module
 var apiAuth = require("./apiAuth");
 var apiFs = require("./apiFs");
