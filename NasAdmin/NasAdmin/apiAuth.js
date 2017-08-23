@@ -36,7 +36,7 @@ router.post("/login", function (req, res) {
 //Logout
 router.get("/logout", function (req, res) {
     req.session.unset = 'destroy';
-    global.logger.info("User logout unsuccessful: \"" + req.session.user.name + "\"," + getClientIp(req));
+    global.logger.info("User logout successful: \"" + req.session.user.name + "\"," + getClientIp(req));
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
     res.end(JSON.stringify({ message: "success" }));
 })
