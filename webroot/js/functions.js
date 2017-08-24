@@ -49,3 +49,11 @@ function getNavs() {
     xhr.send();
 }
 
+//NavOnClick
+var nav = document.getElementsByClassName("mdl-navigation__link");
+for (var i = 0; i < nav.length; i++) {
+    nav[i].onclick = function (e) {
+        e.preventDefault();
+        document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
+    }
+}
