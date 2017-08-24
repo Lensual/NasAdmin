@@ -25,7 +25,7 @@ router.post("/login", function (req, res) {
         req.session.user = grant;
         global.logger.info("User login successful: \"" + req.session.user.name + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: true, message: "success" }));
+        res.end(JSON.stringify({ isSuccess: true, message: "success", sessionId: req.sessionID}));
     } else {
         global.logger.info("User login unsuccessful: \"" + req.body.user + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
@@ -55,9 +55,29 @@ router.use(function (req, res, next) {
     } else {
         global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: flse, message: "Access denied, not login" }));
+        res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }));
     }
 });
+
+//Permission
+router.get("/permission", function (req,res) {
+    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    res.end(JSON.stringify(
+        {
+            isSuccess: true,
+            message: "success",
+            data: [
+                {
+                    name: "filesystem",
+                    displayName: "File System"
+                },
+                {
+                    name: "setting",
+                    displayName: "Setting"
+                }
+            ]
+        }));
+})
 
 module.exports = router;
 
