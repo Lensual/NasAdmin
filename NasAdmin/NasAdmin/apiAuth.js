@@ -16,6 +16,7 @@ router.oauth = new OAuthServer({
     debug: true,
     useErrorHandler: true,
     continueMiddleware: true,
+    requireClientAuthentication: { password: false }
 });
 const UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
 
@@ -55,6 +56,16 @@ router.get("/logout", function (req, res) {
 //    res.end(JSON.stringify(req.session));
 //})
 
+
+router.post("/oauth", function (req, res, next) {
+    router.oauth.token()(req, res, next)
+        .then(function (token) {
+            res.locals.oauth = { token: token };
+            next();
+        });
+});
+
+
 //Authenticate
 router.use(function (req, res, next) {
     router.oauth.authenticate()(req, res, next)
@@ -63,7 +74,7 @@ router.use(function (req, res, next) {
             next();
         })
 });
-router.use(function myfunction(err, req, res, next) {
+router.use(function (err, req, res, next) {
     if (err) {
         if (err instanceof UnauthorizedRequestError) {
             global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
@@ -76,9 +87,6 @@ router.use(function myfunction(err, req, res, next) {
     }
 })
 
-router.get("/oauth", function (req, res, next) {
-    res.end("test");
-});
 
 //Permission
 router.get("/permission", function (req, res) {
