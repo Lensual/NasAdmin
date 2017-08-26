@@ -13,10 +13,11 @@ var memorystore = require('./oauthModels.js');
 router.oauth = new OAuthServer({
     model: memorystore,
     grants: ['password'],
-    //debug: true,
-    useErrorHandler: false, 
-    continueMiddleware: false,
+    debug: true,
+    useErrorHandler: true,
+    continueMiddleware: true,
 });
+const UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
 
 //Login
 router.post("/login", function (req, res) {
@@ -55,28 +56,32 @@ router.get("/logout", function (req, res) {
 //})
 
 //Authenticate
-//router.use(function (req, res, next) {
-//    if (req.session.user) {
-//        next();
-//    } else {
-//        global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
-//        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-//        res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }));
-//    }
-//});
-router.use(function (req,res,next) {
-    if (true) {
-
-    }
-    router.oauth.authenticate()(req,res,next);
+router.use(function (req, res, next) {
+    router.oauth.authenticate()(req, res, next)
+        .then(function (token) {
+            res.locals.oauth = { token: token };
+            next();
+        })
 });
+router.use(function myfunction(err, req, res, next) {
+    if (err) {
+        if (err instanceof UnauthorizedRequestError) {
+            global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
+            res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }))
+        } else {
+            throw (err);
+        }
+    } else {
+        next();
+    }
+})
 
 router.get("/oauth", function (req, res, next) {
-
+    res.end("test");
 });
 
 //Permission
-router.get("/permission", function (req,res) {
+router.get("/permission", function (req, res) {
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
     res.end(JSON.stringify(
         {
