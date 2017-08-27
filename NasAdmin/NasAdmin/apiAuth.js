@@ -29,15 +29,15 @@ router.post("/token", login);
 
 function login(req, res) {
     //check parameter
-    if (grant_type != "password") {
+    if (req.body.grant_type != "password") {
         global.logger.debug("invalid grant_type: " + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ isSuccess: false, message: "invalid grant_type" }));
-    } else if (!username) {
+    } else if (!req.body.username) {
         global.logger.debug("invalid username: " + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ isSuccess: false, message: "invalid username" }));
-    } else if (!password) {
+    } else if (!req.body.password) {
         global.logger.debug("invalid password: " + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
         res.end(JSON.stringify({ isSuccess: false, message: "invalid password" }));
@@ -54,15 +54,17 @@ function login(req, res) {
         //generate token
         grantuser.token = uuidv4();
         var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
-        for (var session in sessions) {
-            if (session.username == grantuser.username) {
-                session.tokens.push(grantuser.token);
+        for (var i = 0; i < sessions.length; i++) {
+            if (sessions[i].username == grantuser.username) {
+                sessions[i].tokens.push(grantuser.token);
             }
         }
 
-        global.logger.info("User login successful: \"" + grant.username + "\"," + getClientIp(req));
+        fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
+
+        global.logger.info("User login successful: \"" + grantuser.username + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: true, message: "success", token: uuidv4() }));
+        res.end(JSON.stringify({ isSuccess: true, message: "success", token: grantuser.token }));
     } else {
         global.logger.info("User login unsuccessful: \"" + req.body.username + "\"," + getClientIp(req));
         res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
@@ -74,17 +76,17 @@ function login(req, res) {
 router.get("/logout", function (req, res) {
     //delete token
     var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
-    for (var session in sessions) {
-        if (session.username == req.body.username) {
-            for (var i = 0; i < tokens.length; i++) {
-                if (session.tokens[i] == req.query.token) {
-                    session.tokens.splice(i);
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i] == req.body.username) {
+            for (var j = 0; j < sessions[i].tokens.length; j++) {
+                if (sessions[i].tokens[j] == req.query.token) {
+                    sessions[i].tokens.splice(j);
                 }
             }
         }
     }
 
-    fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions));
+    fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
@@ -104,12 +106,10 @@ router.get("/logout", function (req, res) {
 router.use(function (req, res, next) {
     //query token
     var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
-    for (var session in sessions) {
-        if (session.username == req.body.username) {
-            for (var token in tokens) {
-                if (token == req.query.token) {
-                    next();
-                }
+    for (var i in sessions) {
+        for (var j in sessions[i].tokens) {
+            if (sessions[i].tokens[j] == req.query.token) {
+                next();
             }
         }
     }
@@ -125,17 +125,17 @@ router.get("/permission", function (req, res) {
         {
             isSuccess: true,
             message: "success",
-            data: [
-                {
-                    name: "filesystem",
-                    displayName: "File System"
-                },
+            grant: [
+                //{
+                //    name: "filesystem",
+                //    displayName: "File System"
+                //},
                 {
                     name: "setting",
                     displayName: "Setting"
                 }
             ]
-        }));
+        }, null, 2));
 })
 
 module.exports = router;
