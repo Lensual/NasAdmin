@@ -53,8 +53,8 @@ function login(req, res) {
     if (grantuser != null) {
         //generate token
         grantuser.token = uuidv4();
-        var sessionsStorage = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
-        for (var session in sessionsStorage) {
+        var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
+        for (var session in sessions) {
             if (session.username == grantuser.username) {
                 session.tokens.push(grantuser.token);
             }
@@ -73,8 +73,8 @@ function login(req, res) {
 //Logout
 router.get("/logout", function (req, res) {
     //delete token
-    var sessionsStorage = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
-    for (var session in sessionsStorage) {
+    var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
+    for (var session in sessions) {
         if (session.username == req.body.username) {
             for (var i = 0; i < tokens.length; i++) {
                 if (session.tokens[i] == req.query.token) {
@@ -83,6 +83,8 @@ router.get("/logout", function (req, res) {
             }
         }
     }
+
+    fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions));
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
@@ -100,24 +102,20 @@ router.get("/logout", function (req, res) {
 
 //Authenticate
 router.use(function (req, res, next) {
-    router.oauth.authenticate()(req, res, next)
-        .then(function (token) {
-            res.locals.oauth = { token: token };
-            next();
-        })
-});
-router.use(function (err, req, res, next) {
-    if (err) {
-        if (err instanceof UnauthorizedRequestError) {
-            global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
-            res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }))
-        } else {
-            throw (err);
+    //query token
+    var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
+    for (var session in sessions) {
+        if (session.username == req.body.username) {
+            for (var token in tokens) {
+                if (token == req.query.token) {
+                    next();
+                }
+            }
         }
-    } else {
-        next();
     }
-})
+    global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
+    res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }))
+});
 
 
 //Permission
