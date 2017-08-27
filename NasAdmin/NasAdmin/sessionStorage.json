@@ -1,0 +1,13 @@
+﻿[
+  {
+    "username": "admin",
+    "tokens": [
+      "94a998f9-89fb-43ab-a764-7ce4153528ed",
+      "76998b34-446d-4272-aa6c-6474c04f368e"
+    ]
+  },
+  {
+    "username": "guest",
+    "tokens": []
+  }
+]

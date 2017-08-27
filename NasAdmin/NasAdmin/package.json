@@ -9,8 +9,8 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
-    "express-oauth-server": "^2.0.0",
     "express-session": "^1.15.5",
-    "log4js": "^2.3.3"
+    "log4js": "^2.3.3",
+    "uuid": "^3.1.0"
   }
 }

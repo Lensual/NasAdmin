@@ -34,15 +34,15 @@
     <Compile Include="apiFs.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="oauthModels.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="server.js" />
     <Content Include="config.json">
       <SubType>Code</SubType>
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="sessionStorage.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="users.json">
       <SubType>Code</SubType>
     </Content>
