@@ -126,13 +126,13 @@ router.get("/permission", function (req, res) {
             isSuccess: true,
             message: "success",
             grant: [
-                //{
-                //    name: "filesystem",
-                //    displayName: "File System"
-                //},
+                {
+                    name: "filesystem",
+                    priority: "0"
+                },
                 {
                     name: "setting",
-                    displayName: "Setting"
+                    priority: "100"
                 }
             ]
         }, null, 2));
