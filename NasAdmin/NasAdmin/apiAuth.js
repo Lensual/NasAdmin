@@ -110,6 +110,7 @@ router.use(function (req, res, next) {
         for (var j in sessions[i].tokens) {
             if (sessions[i].tokens[j] == req.query.token) {
                 next();
+                return;
             }
         }
     }
