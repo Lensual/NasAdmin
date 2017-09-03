@@ -101,7 +101,7 @@ router.get("/sessionInfo", function (req, res) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
                 if (sessions[i].tokens[j] == req.query.token) {
                     res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-                    res.end(JSON.stringify(sessions[i]));
+                    res.end(JSON.stringify({ isSuccess: true, data: sessions[i] }));
                     return;
                 }
             }
