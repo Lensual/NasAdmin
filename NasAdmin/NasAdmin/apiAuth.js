@@ -93,12 +93,24 @@ router.get("/logout", function (req, res) {
     res.end(JSON.stringify({ isSuccess: true, message: "success" }));
 })
 
-////sessionInfo
-//router.get("/sessionInfo", function (req, res) {
-//    global.logger.debug(JSON.stringify(req.session));
-//    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-//    res.end(JSON.stringify(req.session));
-//})
+//sessionInfo
+router.get("/sessionInfo", function (req, res) {
+    if (req.query.token) {
+        var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString())
+        for (var i = 0; i < sessions.length; i++) {
+            if (sessions[i].username == req.query.token) {
+                res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+                res.end(JSON.stringify(sessions[i]));
+                return;
+            }
+        }
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ isSuccess: false, message: "not login" }));
+    } else {
+        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.end(JSON.stringify({ isSuccess: false, message: "invalid token" }));
+    }
+})
 
 
 
