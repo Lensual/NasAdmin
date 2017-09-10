@@ -48,7 +48,7 @@ app.use(function (err, req, res, next) {
 });
 
 //Listen
-//hostname°ó¶¨bug
+//!!hostname°ó¶¨bug
 var server = app.listen(config.port, function () {
     console.log("http://%s:%s", server.address().address, server.address().port);
 });
