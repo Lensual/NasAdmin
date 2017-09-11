@@ -25,8 +25,9 @@ app.use("/api/fs", apiFs);
 
 //API INFO
 app.get("/api", function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).end();  //!!´ıÌî¿Ó
+    //res.setHeader('Content-Type', 'application/json');
+    res.json({ test: "test" });
+    //res.status(200).end();  //!!´ıÌî¿Ó
 });
 
 //404

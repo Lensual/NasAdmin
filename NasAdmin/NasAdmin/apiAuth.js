@@ -1,26 +1,15 @@
-﻿var express = require('express');
+﻿"use strict";
+//express
+var express = require('express');
 var router = express.Router();
-
+//fs
 var fs = require("fs");
-
 
 //bodyParser
 var bodyParser = require("body-parser");
 router.use(bodyParser.urlencoded({ extended: false }));
 
-////OAuthServer
-//var OAuthServer = require('express-oauth-server');
-//var memorystore = require('./oauthModels.js');
-//router.oauth = new OAuthServer({
-//    model: memorystore,
-//    grants: ['password'],
-//    debug: true,
-//    useErrorHandler: true,
-//    continueMiddleware: true,
-//    requireClientAuthentication: { password: false }
-//});
-//const UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
-
+//uuidv4
 const uuidv4 = require('uuid/v4');
 
 //Login
@@ -31,16 +20,16 @@ function login(req, res) {
     //check parameter
     if (req.body.grant_type != "password") {
         global.logger.debug("invalid grant_type: " + getClientIp(req));
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "invalid grant_type" }));
+        res.setHeader('Content-Type', 'application/json');
+        res.status(400).json({ message: "invalid grant_type" });
     } else if (!req.body.username) {
         global.logger.debug("invalid username: " + getClientIp(req));
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "invalid username" }));
+        res.setHeader('Content-Type', 'application/json');
+        res.status(400).json({ message: "invalid username" });
     } else if (!req.body.password) {
         global.logger.debug("invalid password: " + getClientIp(req));
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "invalid password" }));
+        res.setHeader('Content-Type', 'application/json');
+        res.status(400).json({ message: "invalid password" });
     }
     //query users
     var users = JSON.parse(fs.readFileSync("./users.json").toString());
@@ -63,12 +52,13 @@ function login(req, res) {
         fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
         global.logger.info("User login successful: \"" + grantuser.username + "\"," + getClientIp(req));
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: true, message: "success", token: grantuser.token }));
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json(JSON.stringify({ token: grantuser.token }));
     } else {
+        //login unsucessful
         global.logger.info("User login unsuccessful: \"" + req.body.username + "\"," + getClientIp(req));
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "invalid username/password" }));
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401).json(JSON.stringify({ message: "invalid username/password" }));
     }
 }
 
@@ -89,8 +79,8 @@ router.get("/logout", function (req, res) {
     fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
-    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-    res.end(JSON.stringify({ isSuccess: true, message: "success" }));
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).end();
 })
 
 //sessionInfo
@@ -100,7 +90,8 @@ router.get("/sessionInfo", function (req, res) {
         for (var i = 0; i < sessions.length; i++) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
                 if (sessions[i].tokens[j] == req.query.token) {
-                    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+                    res.setHeader('Content-Type', 'application/json');
+
                     res.end(JSON.stringify({ isSuccess: true, data: sessions[i] }));
                     return;
                 }
