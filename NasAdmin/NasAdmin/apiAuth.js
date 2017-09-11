@@ -115,7 +115,6 @@ router.use(function (req, res, next) {
 router.get("/permission", function (req, res) {
     res.status(200).json(JSON.stringify(
         {
-            isSuccess: true,
             message: "success",
             grant: [
                 {
