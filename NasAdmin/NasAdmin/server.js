@@ -25,7 +25,6 @@ app.use("/api/fs", apiFs);
 
 //API INFO
 app.get("/api", function (req, res) {
-    //res.setHeader('Content-Type', 'application/json');
     res.json({ test: "test" });
     //res.status(200).end();  //!!´ýÌî¿Ó
 });
@@ -33,7 +32,6 @@ app.get("/api", function (req, res) {
 //404
 app.use(function (req,res) {
     logger.debug('404 "' + req.originalUrl + '"');
-    res.setHeader('Content-Type', 'application/json');
     res.status(404).json({ message: "404 Not Found", path: req.originalUrl });
 });
 
@@ -42,7 +40,6 @@ app.use(function (err, req, res, next) {
     if (err) {
         logger.error(err);
         if (!res.headersSent) {
-            res.setHeader('Content-Type', 'application/json');
             res.status(500).json({ message: err.message, stack: err.stack });
         }
     }
