@@ -66,6 +66,7 @@ router.get("/logout", function (req, res) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
                 if (sessions[i].tokens[j] == req.query.token) {
                     sessions[i].tokens.splice(j);
+                    j--;
                 }
             }
         }

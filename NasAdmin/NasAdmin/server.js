@@ -16,18 +16,18 @@ app.use(function (req, res, next) {
     next();
 });
 
-//include module
-//!!需要实现动态
-var apiAuth = require("./apiAuth");
-var apiFs = require("./apiFs");
-app.use("/api/auth", apiAuth);
-app.use("/api/fs", apiFs);
-
 //API INFO
 app.get("/api", function (req, res) {
     res.json({ test: "test" });
     //res.status(200).end();  //!!待填坑
 });
+
+//include module
+//!!需要实现动态
+var apiAuth = require("./apiAuth");
+var apiFs = require("./apiFs");
+app.use("/api", apiAuth);
+app.use("/api/fs", apiFs);
 
 //404
 app.use(function (req,res) {
