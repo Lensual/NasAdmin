@@ -20,15 +20,12 @@ function login(req, res) {
     //check parameter
     if (req.body.grant_type != "password") {
         global.logger.debug("invalid grant_type: " + getClientIp(req));
-        res.setHeader('Content-Type', 'application/json');
         res.status(400).json({ message: "invalid grant_type" });
     } else if (!req.body.username) {
         global.logger.debug("invalid username: " + getClientIp(req));
-        res.setHeader('Content-Type', 'application/json');
         res.status(400).json({ message: "invalid username" });
     } else if (!req.body.password) {
         global.logger.debug("invalid password: " + getClientIp(req));
-        res.setHeader('Content-Type', 'application/json');
         res.status(400).json({ message: "invalid password" });
     }
     //query users
@@ -52,12 +49,10 @@ function login(req, res) {
         fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
         global.logger.info("User login successful: \"" + grantuser.username + "\"," + getClientIp(req));
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(JSON.stringify({ token: grantuser.token }));
+        res.status(200).json(JSON.stringify({ message: "success", token: grantuser.token }));
     } else {
         //login unsucessful
         global.logger.info("User login unsuccessful: \"" + req.body.username + "\"," + getClientIp(req));
-        res.setHeader('Content-Type', 'application/json');
         res.status(401).json(JSON.stringify({ message: "invalid username/password" }));
     }
 }
@@ -79,8 +74,7 @@ router.get("/logout", function (req, res) {
     fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).end();
+    res.status(200).json({ message: "success" });
 })
 
 //sessionInfo
@@ -90,22 +84,16 @@ router.get("/sessionInfo", function (req, res) {
         for (var i = 0; i < sessions.length; i++) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
                 if (sessions[i].tokens[j] == req.query.token) {
-                    res.setHeader('Content-Type', 'application/json');
-
-                    res.end(JSON.stringify({ isSuccess: true, data: sessions[i] }));
+                    res.status(200).json(JSON.stringify({ message: "success", session: sessions[i] }));
                     return;
                 }
             }
         }
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "not login" }));
+        res.status(401).json(JSON.stringify({ message: "not login" }));
     } else {
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ isSuccess: false, message: "invalid token" }));
+        res.status(401).json(JSON.stringify({ message: "invalid token" }));
     }
 })
-
-
 
 //Authenticate
 router.use(function (req, res, next) {
@@ -120,14 +108,12 @@ router.use(function (req, res, next) {
         }
     }
     global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
-    res.end(JSON.stringify({ isSuccess: false, message: "Access denied, not login" }))
+    res.status(403).json(JSON.stringify({ message: "Access denied, not login" }));
 });
 
-
-//Permission
+//Permission !!功能未完成
 router.get("/permission", function (req, res) {
-    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-    res.end(JSON.stringify(
+    res.status(200).json(JSON.stringify(
         {
             isSuccess: true,
             message: "success",
@@ -142,7 +128,7 @@ router.get("/permission", function (req, res) {
                 }
             ]
         }, null, 2));
-})
+});
 
 module.exports = router;
 
