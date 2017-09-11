@@ -1,4 +1,6 @@
-﻿var express = require('express');
+﻿"use strict";
+
+var express = require('express');
 var router = express.Router();
 
 var fs = require("fs");
@@ -12,8 +14,7 @@ router.get("/readDirSync", function (req, res) {
             doErr(err, res);
             return;
         }
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify(files));
+        res.status(200).json(JSON.stringify({ message: "success", files }));
     });
 });
 
@@ -24,8 +25,7 @@ router.get("/mvSync", function (req, res) {
             doErr(err, res);
             return;
         }
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-        res.end(JSON.stringify({ message: "success" }));
+        res.status(200).json(JSON.stringify({ message: "success" }));
     });
 });
 
@@ -97,9 +97,14 @@ router.get("/cpSync", function (req, res) {
 
     }
 
-    copySync(req.query.sourcePath, req.query.targetPath);
-    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-    res.end(JSON.stringify({ message: "success" }));
+    try {
+        copySync(req.query.sourcePath, req.query.targetPath);
+    } catch (err) {
+        next(err);
+        return;
+    }
+
+    res.status(200).json(JSON.stringify({ message: "success" }));
 });
 
 //删除
@@ -124,9 +129,14 @@ router.get("/rmSync", function (req, res) {
         }
     }
 
-    removeSync(req.query.path, req.query.recursive);
-    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
-    res.end(JSON.stringify({ message: "success" }));
+    try {
+        removeSync(req.query.path, req.query.recursive);
+    } catch (err) {
+        next(err);
+        return;
+    }
+
+    res.status(200).json(JSON.stringify({ message: "success" }));
 });
 
 module.exports = router;
