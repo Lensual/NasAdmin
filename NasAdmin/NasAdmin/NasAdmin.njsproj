@@ -35,6 +35,9 @@
     <Compile Include="apiFs.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="apiTaskQueue.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="server.js" />
     <Content Include="config.json">
       <SubType>Code</SubType>

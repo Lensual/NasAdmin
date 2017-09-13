@@ -26,6 +26,8 @@ app.get("/api", function (req, res) {
 //!!需要实现动态
 var apiAuth = require("./apiAuth");
 var apiFs = require("./apiFs");
+var apiTaskQueue = require("./apiTaskQueue");
+app.use("/api/taskqueue",apiTaskQueue.Router );
 app.use("/api", apiAuth);
 app.use("/api/fs", apiFs);
 
