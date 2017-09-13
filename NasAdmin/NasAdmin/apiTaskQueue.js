@@ -45,7 +45,6 @@ function Task(args, func) {
     this.Check = function () {
         if (self.Status == "fulfilled" || self.Status == "rejected") {
             self.IsChecked = true;
-            self.Status = "checked";
             return self.Status;
         } else {
             return self.Status;
@@ -59,12 +58,11 @@ function GetTask(taskId) {
             return tasks[i];
         }
     }
-
 }
 
 function Clean() {
     for (var i = 0; i < tasks.length; i++) {
-        if (tasks[i].status == "checked") {
+        if (tasks[i].IsChecked) {
             tasks.splice(i);
             i--;
         }
@@ -77,23 +75,13 @@ function Save() {
 
 router.get("/check/:taskId", function (req, res) {
     //console.log(GetTask(req.params.taskId));
-    res.json({ Status: new GetTask(req.params.taskId).Check()});
-
+    var task = GetTask(req.params.taskId);
+    if (task) {
+        res.status(200).json({ message: "success", Status: task.Check(), TaskId: task.TaskId, Result: task.Result });
+    } else {
+        res.status(404).json({ message: "taskId not found" });
+    }
 });
-
-router.use(function (req, res) {
-    var t = new Task("test", function (selfTask) {
-        console.log(selfTask);
-    });
-    console.log(t);
-    Enqueue(t);
-    t.Start();
-
-    res.json({ "ok": "ok" });
-});
-
-
-
 
 exports.Router = router;
 exports.Enqueue = Enqueue;
