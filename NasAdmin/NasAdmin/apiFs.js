@@ -139,4 +139,4 @@ router.get("/rmSync", function (req, res) {
     res.status(200).json(JSON.stringify({ message: "success" }));
 });
 
-module.exports = router;
+exports.Router = router;

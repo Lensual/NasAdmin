@@ -27,9 +27,9 @@ app.get("/api", function (req, res) {
 var apiAuth = require("./apiAuth");
 var apiFs = require("./apiFs");
 var apiTaskQueue = require("./apiTaskQueue");
-app.use("/api/taskqueue",apiTaskQueue.Router );
-app.use("/api", apiAuth);
-app.use("/api/fs", apiFs);
+app.use("/api/taskqueue", apiTaskQueue.Router);
+app.use("/api", apiAuth.Router);
+app.use("/api/fs", apiFs.Router);
 
 //404
 app.use(function (req,res) {

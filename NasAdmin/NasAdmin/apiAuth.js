@@ -130,7 +130,7 @@ router.get("/permission", function (req, res) {
         }, null, 2));
 });
 
-module.exports = router;
+exports.Router = router;
 
 function getClientIp(req) {
     return req.headers['x-forwarded-for'] ||
