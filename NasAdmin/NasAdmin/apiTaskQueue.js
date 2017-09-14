@@ -18,7 +18,6 @@ function Task(func) {
     this.TaskId = uuidv4();
     this.Status = "init";
     this.Func = func;   //被调用函数 Promise
-    //this.Args = args;   //传入参数
     var self = this;
     this.Start = function () {
         self.Status = "pending";
@@ -26,9 +25,6 @@ function Task(func) {
             .then(function (value) {
                 self.Result = value;
                 self.Status = "fulfilled";
-                //console.log(self);
-                //self.Check();
-                //console.log(self);
                 global.logger.debug(self);
             })
             .catch(function (reason) {
@@ -70,7 +66,6 @@ function Save() {
 }
 
 router.get("/check/:taskId", function (req, res) {
-    //console.log(GetTask(req.params.taskId));
     var task = GetTask(req.params.taskId);
     if (task) {
         res.status(200).json({ message: "success", Status: task.Check(), TaskId: task.TaskId, Result: task.Result });
