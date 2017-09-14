@@ -33,7 +33,7 @@ app.use("/api", apiAuth.Router);
 app.use("/api/fs", apiFs.Router);
 
 //404
-app.use(function (req,res) {
+app.use(function (req, res) {
     logger.debug('404 "' + req.originalUrl + '"');
     res.status(404).json({ message: "404 Not Found", path: req.originalUrl });
 });

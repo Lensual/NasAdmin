@@ -14,7 +14,7 @@ var Task = taskQueue.Task;
 router.get("/readDirSync", function (req, res, next) {
     fs.readdir(req.query.path, (err, files) => {
         if (err) { next(err) };
-        res.status(200).json(JSON.stringify({ message: "success", files }));
+        res.status(200).json({ message: "success", files });
     });
 });
 
@@ -37,7 +37,7 @@ router.get("/mvSync", function (req, res) {
             doErr(err, res);
             return;
         }
-        res.status(200).json(JSON.stringify({ message: "success" }));
+        res.status(200).json({ message: "success" });
     });
 });
 
@@ -116,7 +116,7 @@ router.get("/cpSync", function (req, res) {
         return;
     }
 
-    res.status(200).json(JSON.stringify({ message: "success" }));
+    res.status(200).json({ message: "success" });
 });
 
 //删除
@@ -148,7 +148,7 @@ router.get("/rmSync", function (req, res) {
         return;
     }
 
-    res.status(200).json(JSON.stringify({ message: "success" }));
+    res.status(200).json({ message: "success" });
 });
 
 exports.Router = router;

@@ -49,11 +49,11 @@ function login(req, res) {
         fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
         global.logger.info("User login successful: \"" + grantuser.username + "\"," + getClientIp(req));
-        res.status(200).json(JSON.stringify({ message: "success", token: grantuser.token }));
+        res.status(200).json({ message: "success", token: grantuser.token });
     } else {
         //login unsucessful
         global.logger.info("User login unsuccessful: \"" + req.body.username + "\"," + getClientIp(req));
-        res.status(401).json(JSON.stringify({ message: "invalid username/password" }));
+        res.status(401).json({ message: "invalid username/password" });
     }
 }
 
@@ -72,7 +72,7 @@ router.get("/logout", function (req, res) {
         }
     }
 
-    fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
+    fs.writeFileSync("./sessionStorage.json", sessions, null, 2);
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
     res.status(200).json({ message: "success" });
@@ -85,14 +85,14 @@ router.get("/sessionInfo", function (req, res) {
         for (var i = 0; i < sessions.length; i++) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
                 if (sessions[i].tokens[j] == req.query.token) {
-                    res.status(200).json(JSON.stringify({ message: "success", session: sessions[i] }));
+                    res.status(200).json({ message: "success", session: sessions[i] });
                     return;
                 }
             }
         }
-        res.status(401).json(JSON.stringify({ message: "not login" }));
+        res.status(401).json({ message: "not login" });
     } else {
-        res.status(401).json(JSON.stringify({ message: "invalid token" }));
+        res.status(401).json({ message: "invalid token" });
     }
 })
 
@@ -113,12 +113,12 @@ router.use(function (req, res, next) {
         return;
     }
     global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
-    res.status(403).json(JSON.stringify({ message: "Access denied, not login" }));
+    res.status(403).json({ message: "Access denied, not login" });
 });
 
 //Permission !!功能未完成
 router.get("/permission", function (req, res) {
-    res.status(200).json(JSON.stringify(
+    res.status(200).json(
         {
             message: "success",
             grant: [
@@ -131,7 +131,7 @@ router.get("/permission", function (req, res) {
                     priority: "100"
                 }
             ]
-        }, null, 2));
+        });
 });
 
 exports.Router = router;
