@@ -68,7 +68,7 @@ function Save() {
 router.get("/check/:taskId", function (req, res) {
     var task = GetTask(req.params.taskId);
     if (task) {
-        res.status(200).json({ message: "success", Status: task.Check(), TaskId: task.TaskId, Result: task.Result });
+        res.status(200).json({ message: "success", Status: task.Check(), IsChecked: task.IsChecked, TaskId: task.TaskId, Result: task.Result });
         global.logger.debug(task);
     } else {
         res.status(404).json({ message: "taskId not found" });
