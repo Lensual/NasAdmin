@@ -27,12 +27,14 @@ function Task(func) {
                 self.Result = value;
                 self.Status = "fulfilled";
                 //console.log(self);
-                self.Check();
+                //self.Check();
                 //console.log(self);
+                global.logger.debug(self);
             })
             .catch(function (reason) {
                 self.Result = reason;
                 self.Status = "rejected";
+                global.logger.debug(self);
             });
     };
     this.IsChecked = false;
@@ -72,6 +74,7 @@ router.get("/check/:taskId", function (req, res) {
     var task = GetTask(req.params.taskId);
     if (task) {
         res.status(200).json({ message: "success", Status: task.Check(), TaskId: task.TaskId, Result: task.Result });
+        global.logger.debug(task);
     } else {
         res.status(404).json({ message: "taskId not found" });
     }
