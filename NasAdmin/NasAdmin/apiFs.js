@@ -6,16 +6,28 @@ var router = express.Router();
 var fs = require("fs");
 var path = require("path");
 
+var taskQueue = require("./apiTaskQueue")
+var Task = taskQueue.Task;
+
 
 //读文件夹
-router.get("/readDirSync", function (req, res) {
+router.get("/readDirSync", function (req, res, next) {
     fs.readdir(req.query.path, (err, files) => {
-        if (err) {
-            doErr(err, res);
-            return;
-        }
+        if (err) { next(err) };
         res.status(200).json(JSON.stringify({ message: "success", files }));
     });
+});
+
+router.get("/readDir", function (req, res) {
+    var task = new Task(function (resolve, reject) {
+        fs.readdir(req.query.path, (err, files) => {
+            if (err) { reject(err) }
+            resolve(files);
+        });
+    });
+    taskQueue.Enqueue(task);
+    task.Start();
+    res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
 
 //重命名 剪切 !!注意耗时操作，需要设计异步api
