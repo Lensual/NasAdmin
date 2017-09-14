@@ -20,5 +20,8 @@
         "level": "DEBUG"
       }
     }
+  },
+  "debug": {
+    "nologin": true
   }
 }

@@ -1,6 +1,7 @@
 "use strict";
 //include config & log4js
 var config = require("./config.json");
+global.config = config;
 var log4js = require("log4js");
 log4js.configure(config.log4js);
 global.logger = log4js.getLogger("default");

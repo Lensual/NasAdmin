@@ -108,6 +108,10 @@ router.use(function (req, res, next) {
             }
         }
     }
+    if (global.config.debug && global.config.debug.nologin) {
+        next();
+        return;
+    }
     global.logger.info("Access denied, not login: " + getClientIp(req) + "\"");
     res.status(403).json(JSON.stringify({ message: "Access denied, not login" }));
 });
