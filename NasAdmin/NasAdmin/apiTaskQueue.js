@@ -14,21 +14,15 @@ function Enqueue(task) {
     return task;
 }
 
-function Task(args, func) {
+function Task(func) {
     this.TaskId = uuidv4();
     this.Status = "init";
-    this.Func = func;   //被调用函数
-    this.Args = args;   //传入参数
+    this.Func = func;   //被调用函数 Promise
+    //this.Args = args;   //传入参数
     var self = this;
     this.Start = function () {
-        self.Promise = new Promise(function (resolve, reject) {
-            self.Status = "pending";
-            try {
-                resolve(self.Func(self));
-            } catch (err) {
-                reject(err);
-            }
-        })
+        self.Status = "pending";
+        self.Promise = new Promise(self.Func)
             .then(function (value) {
                 self.Result = value;
                 self.Status = "fulfilled";
