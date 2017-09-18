@@ -64,7 +64,7 @@ router.get("/logout", function (req, res) {
     for (var i = 0; i < sessions.length; i++) {
         if (sessions[i] == req.body.username) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
-                if (sessions[i].tokens[j] == req.query.token) {
+                if (sessions[i].tokens[j] == req.header("token")) {
                     sessions[i].tokens.splice(j);
                     j--;
                 }
@@ -80,11 +80,11 @@ router.get("/logout", function (req, res) {
 
 //sessionInfo
 router.get("/sessionInfo", function (req, res) {
-    if (req.query.token) {
+    if (req.header("token")) { //!!待验证是否存在bug
         var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString())
         for (var i = 0; i < sessions.length; i++) {
             for (var j = 0; j < sessions[i].tokens.length; j++) {
-                if (sessions[i].tokens[j] == req.query.token) {
+                if (sessions[i].tokens[j] == req.header("token")) {
                     res.status(200).json({ message: "success", session: sessions[i] });
                     return;
                 }
@@ -102,7 +102,7 @@ router.use(function (req, res, next) {
     var sessions = JSON.parse(fs.readFileSync("./sessionStorage.json").toString());
     for (var i in sessions) {
         for (var j in sessions[i].tokens) {
-            if (sessions[i].tokens[j] == req.query.token) {
+            if (sessions[i].tokens[j] == req.header("token")) {
                 next();
                 return;
             }
