@@ -13,7 +13,7 @@ var Task = taskQueue.Task;
 //读文件夹
 router.get("/readDirSync", function (req, res, next) {
     fs.readdir(req.query.path, (err, files) => {
-        if (err) { next(err) };
+        if (err) { return next(err) };
         res.status(200).json({ message: "success", files });
     });
 });
@@ -21,7 +21,9 @@ router.get("/readDirSync", function (req, res, next) {
 router.get("/readDir", function (req, res) {
     var task = new Task(function (resolve, reject) {
         fs.readdir(req.query.path, (err, files) => {
-            if (err) { reject(err) }
+            if (err) {
+                return reject(err);
+            }
             resolve(files);
         });
     });
@@ -34,11 +36,24 @@ router.get("/readDir", function (req, res) {
 router.get("/mvSync", function (req, res) {
     fs.rename(req.query.oldPath, req.query.newPath, (err) => {
         if (err) {
-            doErr(err, res);
-            return;
+            return doErr(err, res);
         }
         res.status(200).json({ message: "success" });
     });
+});
+
+router.get("/mv", function (req, res) {
+    var task = new Task(function (resolve, reject) {
+        fs.rename(req.query.oldPath, req.query.newPath, (err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve("success");
+        });
+    });
+    taskQueue.Enqueue(task);
+    task.Start();
+    res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
 
 //复制 !!注意耗时操作，需要设计异步api
