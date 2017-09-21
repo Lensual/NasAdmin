@@ -121,16 +121,18 @@ router.get("/permission", function (req, res) {
     res.status(200).json(
         {
             message: "success",
-            grant: [
-                {
-                    name: "filesystem",
-                    priority: "0"
-                },
-                {
-                    name: "setting",
-                    priority: "100"
-                }
-            ]
+            permission: {
+                grant: [
+                    {
+                        name: "filesystem",
+                        priority: "0"
+                    },
+                    {
+                        name: "setting",
+                        priority: "100"
+                    }
+                ]
+            }
         });
 });
 
