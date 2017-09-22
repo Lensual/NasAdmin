@@ -37,10 +37,8 @@ function Task(func) {
     this.Check = function () {
         if (self.Status == "fulfilled" || self.Status == "rejected") {
             self.IsChecked = true;
-            return self.Status;
-        } else {
-            return self.Status;
         }
+        return self.Status;
     };
 }
 
