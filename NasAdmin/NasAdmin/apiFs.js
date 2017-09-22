@@ -12,73 +12,65 @@ var Task = taskQueue.Task;
 
 //读文件夹
 router.get("/readDirSync", function (req, res, next) {
-    var target = path.normalize(req.query.path);
-    fs.readdir(target, (err, files) => {
-        if (err) { return next(err) };
-        for (var i = 0; i < files.length; i++) {
-            fs.stat(path.join(target, files[i]), function (err, stats) {
-                if (err) { return next(err) };
-                if (stats.isFile()) {
-                    files[i].type = "File";
-                } else if (stats.isDirectory()) {
-                    files[i].type = "Directory";
-                } else if (stats.isBlockDevice()){
-                    files[i].type = "BlockDevice";
-                } else if (stats.isCharacterDevice()) {
-                    files[i].type = "CharacterDevice";
-                } else if (stats.isSymbolicLink()) {
-                    files[i].type = "SymbolicLink";
-                } else if (stats.isFIFO()) {
-                    files[i].type = "FIFO";
-                } else if (stats.isSocket()) {
-                    files[i].type = "Socket";
-                }
-                //完成
-                if (i == files.length - 1) {
-                    res.status(200).json({ message: "success", files });
-                }
-            });
-        }
+    readDir(req.query.path, function (files, err) {
+        if (err) { return next(err) }
+        res.status(200).json({ message: "success", files });
     });
 });
 
 router.get("/readDir", function (req, res) {
     var task = new Task(function (resolve, reject) {
-        var target = path.normalize(req.query.path);
-        fs.readdir(target, (err, files) => {
+        readDir(req.query.path, function (files, err) {
             if (err) { return reject(err) }
-            for (var i = 0; i < files.length; i++) {
-                fs.stat(path.join(target, files[i]), function (err, stats) {
-                    if (err) { return next(err) };
-                    if (stats.isDirectory()) {
-                        if (stats.isFile()) {
-                            files[i].type = "File";
-                        } else if (stats.isDirectory()) {
-                            files[i].type = "Directory";
-                        } else if (stats.isBlockDevice()) {
-                            files[i].type = "BlockDevice";
-                        } else if (stats.isCharacterDevice()) {
-                            files[i].type = "CharacterDevice";
-                        } else if (stats.isSymbolicLink()) {
-                            files[i].type = "SymbolicLink";
-                        } else if (stats.isFIFO()) {
-                            files[i].type = "FIFO";
-                        } else if (stats.isSocket()) {
-                            files[i].type = "Socket";
-                        }
-                    }
-                    //完成
-                    if (i == files.length - 1) {
-                        resolve(files);
-                    }
-                });
-            }
+            resolve(files);
         });
     });
     taskQueue.Enqueue(task);
     task.Start();
     res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
+
+function readDir(pathToRead, callback) {
+    var target = path.normalize(pathToRead);
+    fs.readdir(target, (err, files) => {
+        if (err) { return callback(null, err) }
+        var result = [];
+        for (var i = 0; i < files.length; i++) {
+            var type;
+            try {
+                var stats = fs.statSync(path.join(target, files[i]));
+            } catch (err) {
+                switch (err.code) {
+                    case "EBUSY":
+                        type = "Locked";
+                        break;
+                    case "EPERM":
+                        type = "Denied";
+                        break;
+                    default:
+                        return callback(null, err);
+                }
+            }
+            if (stats.isFile()) {
+                type = "File";
+            } else if (stats.isDirectory()) {
+                type = "Directory";
+            } else if (stats.isBlockDevice()) {
+                type = "BlockDevice";
+            } else if (stats.isCharacterDevice()) {
+                type = "CharacterDevice";
+            } else if (stats.isSymbolicLink()) {
+                type = "SymbolicLink";
+            } else if (stats.isFIFO()) {
+                type = "FIFO";
+            } else if (stats.isSocket()) {
+                type = "Socket";
+            }
+            result.push({ name: files[i], type: type });
+        }
+        callback(result);
+    });
+}
 
 //重命名 剪切 !!注意耗时操作，需要设计异步api
 router.get("/mvSync", function (req, res) {
