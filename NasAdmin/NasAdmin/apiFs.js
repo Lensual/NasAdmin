@@ -12,19 +12,41 @@ var Task = taskQueue.Task;
 
 //读文件夹
 router.get("/readDirSync", function (req, res, next) {
-    fs.readdir(req.query.path, (err, files) => {
+    var target = path.normalize(req.query.path);
+    fs.readdir(target, (err, files) => {
         if (err) { return next(err) };
-        res.status(200).json({ message: "success", files });
+        for (var i = 0; i < files.length; i++) {
+            fs.stat(path.join(target, files[i]), function (err, stats) {
+                if (err) { return next(err) };
+                if (stats.isDirectory()) {
+                    files[i] += path.sep;   //加斜杠
+                }
+                //完成
+                if (i == files.length - 1) {
+                    res.status(200).json({ message: "success", files });
+                }
+            });
+        }
     });
 });
 
 router.get("/readDir", function (req, res) {
     var task = new Task(function (resolve, reject) {
-        fs.readdir(req.query.path, (err, files) => {
-            if (err) {
-                return reject(err);
+        var target = path.normalize(req.query.path);
+        fs.readdir(target, (err, files) => {
+            if (err) { return reject(err) }
+            for (var i = 0; i < files.length; i++) {
+                fs.stat(path.join(target, files[i]), function (err, stats) {
+                    if (err) { return next(err) };
+                    if (stats.isDirectory()) {
+                        files[i] += path.sep;   //加斜杠
+                    }
+                    //完成
+                    if (i == files.length - 1) {
+                        resolve(files);
+                    }
+                });
             }
-            resolve(files);
         });
     });
     taskQueue.Enqueue(task);
