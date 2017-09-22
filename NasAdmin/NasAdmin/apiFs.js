@@ -18,8 +18,20 @@ router.get("/readDirSync", function (req, res, next) {
         for (var i = 0; i < files.length; i++) {
             fs.stat(path.join(target, files[i]), function (err, stats) {
                 if (err) { return next(err) };
-                if (stats.isDirectory()) {
-                    files[i] += path.sep;   //加斜杠
+                if (stats.isFile()) {
+                    files[i].type = "File";
+                } else if (stats.isDirectory()) {
+                    files[i].type = "Directory";
+                } else if (stats.isBlockDevice()){
+                    files[i].type = "BlockDevice";
+                } else if (stats.isCharacterDevice()) {
+                    files[i].type = "CharacterDevice";
+                } else if (stats.isSymbolicLink()) {
+                    files[i].type = "SymbolicLink";
+                } else if (stats.isFIFO()) {
+                    files[i].type = "FIFO";
+                } else if (stats.isSocket()) {
+                    files[i].type = "Socket";
                 }
                 //完成
                 if (i == files.length - 1) {
@@ -39,7 +51,21 @@ router.get("/readDir", function (req, res) {
                 fs.stat(path.join(target, files[i]), function (err, stats) {
                     if (err) { return next(err) };
                     if (stats.isDirectory()) {
-                        files[i] += path.sep;   //加斜杠
+                        if (stats.isFile()) {
+                            files[i].type = "File";
+                        } else if (stats.isDirectory()) {
+                            files[i].type = "Directory";
+                        } else if (stats.isBlockDevice()) {
+                            files[i].type = "BlockDevice";
+                        } else if (stats.isCharacterDevice()) {
+                            files[i].type = "CharacterDevice";
+                        } else if (stats.isSymbolicLink()) {
+                            files[i].type = "SymbolicLink";
+                        } else if (stats.isFIFO()) {
+                            files[i].type = "FIFO";
+                        } else if (stats.isSocket()) {
+                            files[i].type = "Socket";
+                        }
                     }
                     //完成
                     if (i == files.length - 1) {
