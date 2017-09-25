@@ -16,7 +16,7 @@ router.get("/readDirSync", function (req, res, next) {
     if (!checkPathAtRoot(config.storage.root, req.query.path)) {
         throw new Error("Access denied: path not in storage root");
     }
-    readDir(req.query.path, function (files, err) {
+    readDir(config.storage.root + req.query.path, function (files, err) {
         if (err) { return next(err) }
         res.status(200).json({ message: "success", files });
     });
