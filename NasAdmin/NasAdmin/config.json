@@ -23,5 +23,8 @@
   },
   "debug": {
     "nologin": true
+  },
+  "storage": {
+    "root": "c:\\"
   }
 }

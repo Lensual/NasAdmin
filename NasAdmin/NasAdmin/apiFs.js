@@ -12,6 +12,10 @@ var Task = taskQueue.Task;
 
 //读文件夹
 router.get("/readDirSync", function (req, res, next) {
+    // 检查路径是否在root内
+    if (!checkPathAtRoot(config.storage.root, req.query.path)) {
+        throw new Error("Access denied: path not in storage root");
+    }
     readDir(req.query.path, function (files, err) {
         if (err) { return next(err) }
         res.status(200).json({ message: "success", files });
@@ -20,7 +24,11 @@ router.get("/readDirSync", function (req, res, next) {
 
 router.get("/readDir", function (req, res) {
     var task = new Task(function (resolve, reject) {
-        readDir(req.query.path, function (files, err) {
+        // 检查路径是否在root内
+        if (!checkPathAtRoot(config.storage.root, req.query.path)) {
+            return reject(new Error("Access denied: path not in storage root"));
+        }
+        readDir(config.storage.root + req.query.path, function (files, err) {
             if (err) { return reject(err) }
             resolve(files);
         });
@@ -29,6 +37,17 @@ router.get("/readDir", function (req, res) {
     task.Start();
     res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
+
+function checkPathAtRoot(root,target) {
+    var arrTarget = path.relative(root, target).split(path.sep);
+    var arrRoot = path.normalize(root).split(path.sep);
+    for (var i = 0; i < arrRoot.length; i++) {
+        if (arrTarget[i] != arrRoot[i]) {
+            return false;
+        }
+    }
+    return true;
+}
 
 function readDir(pathToRead, callback) {
     var target = path.normalize(pathToRead);
