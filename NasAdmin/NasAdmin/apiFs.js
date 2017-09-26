@@ -63,6 +63,21 @@ function readDir(pathToRead, callback) {
             var type;
             try {
                 var stats = fs.statSync(path.join(target, files[i]));
+                if (stats.isFile()) {
+                    type = "File";
+                } else if (stats.isDirectory()) {
+                    type = "Directory";
+                } else if (stats.isBlockDevice()) {
+                    type = "BlockDevice";
+                } else if (stats.isCharacterDevice()) {
+                    type = "CharacterDevice";
+                } else if (stats.isSymbolicLink()) {
+                    type = "SymbolicLink";
+                } else if (stats.isFIFO()) {
+                    type = "FIFO";
+                } else if (stats.isSocket()) {
+                    type = "Socket";
+                }
             } catch (err) {
                 switch (err.code) {
                     case "EBUSY":
@@ -74,21 +89,6 @@ function readDir(pathToRead, callback) {
                     default:
                         return callback(null, err);
                 }
-            }
-            if (stats.isFile()) {
-                type = "File";
-            } else if (stats.isDirectory()) {
-                type = "Directory";
-            } else if (stats.isBlockDevice()) {
-                type = "BlockDevice";
-            } else if (stats.isCharacterDevice()) {
-                type = "CharacterDevice";
-            } else if (stats.isSymbolicLink()) {
-                type = "SymbolicLink";
-            } else if (stats.isFIFO()) {
-                type = "FIFO";
-            } else if (stats.isSocket()) {
-                type = "Socket";
             }
             result.push({ name: files[i], type: type });
         }
