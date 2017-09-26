@@ -38,9 +38,14 @@ router.get("/readDir", function (req, res) {
     res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
 
-function checkPathAtRoot(root,target) {
+function checkPathAtRoot(root, target) {
     var arrTarget = path.resolve(root, target).split(path.sep);
     var arrRoot = path.normalize(root).split(path.sep);
+
+    if (arrTarget[0] == "") { arrTarget.splice(0); }
+    if (arrRoot[0] == "") { arrRoot.splice(0); }
+    if (arrRoot[arrRoot.length - 1] == "") { arrRoot.splice(arrRoot.length - 1); }
+
     for (var i = 0; i < arrRoot.length; i++) {
         if (arrTarget[i] != arrRoot[i]) {
             return false;
