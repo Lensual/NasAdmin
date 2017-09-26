@@ -39,7 +39,7 @@ router.get("/readDir", function (req, res) {
 });
 
 function checkPathAtRoot(root,target) {
-    var arrTarget = path.relative(root, target).split(path.sep);
+    var arrTarget = path.resolve(root, target).split(path.sep);
     var arrRoot = path.normalize(root).split(path.sep);
     for (var i = 0; i < arrRoot.length; i++) {
         if (arrTarget[i] != arrRoot[i]) {
