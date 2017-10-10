@@ -207,34 +207,41 @@ function copySync(sourcePath, targetPath) {
 
 //删除
 router.get("/rmSync", function (req, res) {
-    function removeSync(sourcePath, recursive) {
-        if (!fs.existsSync(sourcePath)) {
-            logger.warn("No such file or directory \"" + path.normalize(sourcePath) + "\"");
-            return;
-        }
-        if (fs.statSync(sourcePath).isDirectory()) {
-            if (!recursive) {
-                fs.rmdirSync(sourcePath);
-            } else {
-                var files = fs.readdirSync(sourcePath);
-                files.forEach(function (file) {
-                    removeSync(path.join(sourcePath, file), true);
-                });
-                fs.rmdirSync(sourcePath);
-            }
-        } else {
-            fs.unlinkSync(sourcePath);
-        }
-    }
-
-    try {
-        removeSync(req.query.path, req.query.recursive);
-    } catch (err) {
-        next(err);
-        return;
-    }
-
+    removeSync(req.query.path, req.query.recursive);
     res.status(200).json({ message: "success" });
 });
+
+router.get("/rm", function (req, res) {
+    var task = new Task(function (resolve, reject) {
+        removeSync(req.query.path, req.query.recursive);
+        resolve("success");
+    });
+    taskQueue.Enqueue(task);
+    task.Start();
+    res.status(202).json({ message: "success", TaskId: task.TaskId });
+});
+
+function removeSync(sourcePath, recursive) {
+    if (!fs.existsSync(sourcePath)) {
+        logger.warn("No such file or directory \"" + path.normalize(sourcePath) + "\"");
+        return;
+    }
+    if (fs.statSync(sourcePath).isDirectory()) {
+        if (!recursive) {
+            fs.rmdirSync(sourcePath);
+        } else {
+            var files = fs.readdirSync(sourcePath);
+            files.forEach(function (file) {
+                removeSync(path.join(sourcePath, file), true);
+            });
+            fs.rmdirSync(sourcePath);
+        }
+    } else {
+        fs.unlinkSync(sourcePath);
+    }
+}
+
+
+
 
 exports.Router = router;
