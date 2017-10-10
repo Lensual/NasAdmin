@@ -72,7 +72,7 @@ router.get("/logout", function (req, res) {
         }
     }
 
-    fs.writeFileSync("./sessionStorage.json", sessions, null, 2);
+    fs.writeFileSync("./sessionStorage.json", JSON.stringify(sessions, null, 2));
 
     global.logger.info("User logout successful: \"" + req.body.useusername + "\"," + getClientIp(req));
     res.status(200).json({ message: "success" });
