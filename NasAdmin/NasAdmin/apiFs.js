@@ -123,80 +123,87 @@ router.get("/mv", function (req, res) {
 //复制 !!注意耗时操作，需要设计异步api
 //权限不跟随复制
 router.get("/cpSync", function (req, res) {
-    function copySync(sourcePath, targetPath) { //有错误直接抛异常
-        var s_stats = fs.statSync(sourcePath);
-
-        if (s_stats.isFile()) {
-            //!!缺个判断目标
-            //判断目标是否存在
-            if (fs.existsSync(targetPath)) {
-                //判断目标是不是目录
-                var t_stats = fs.statSync(targetPath);
-                if (t_stats.isDirectory()) {
-                    //retarget到新建文件
-                    var retarget = path.join(targetPath, path.basename(sourcePath));
-                }
-            } else {
-                //判断目标所在目录是否存在
-                if (!fs.existsSync(path.dirname(targetPath))) {
-                    throw new Error("No such file or directory \"" + path.dirname(targetPath) + "\"");
-                }
-            }
-            var rs = fs.createReadStream(sourcePath);
-            if (retarget == null) {
-                var ws = fs.createWriteStream(targetPath);
-            } else {
-                var ws = fs.createWriteStream(retarget);
-            }
-            rs.pipe(ws);
-            rs.close();
-            ws.close();
-            //!!加个优化
-        } else {
-            //判断目标是否存在
-            if (fs.existsSync(targetPath)) {
-                //判断目标是不是目录
-                var t_stats = fs.statSync(targetPath);
-                if (t_stats.isFile()) {
-                    throw new Error("cannot overwrite non-directory \"" + path.normalize(targetPath) + "\" with directory \"" + path.normalize(sourcePath) + "\"");
-                }
-                //判断目标目录是否存在同名目录
-                if (!fs.existsSync(path.join(targetPath, path.basename(sourcePath)))) {
-                    fs.mkdirSync(path.join(targetPath, path.basename(sourcePath)));
-                }
-            } else {
-                //判断目标所在目录是否存在
-                if (fs.existsSync(path.dirname(targetPath))) {
-                    fs.mkdirSync(targetPath);
-                    var renameFlag = true;
-                } else {
-                    throw new Error("No such file or directory \"" + path.dirname(targetPath) + "\"");
-                }
-            }
-            //如果目标被重命名
-            if (renameFlag) {
-                var retarget = targetPath;
-            } else {
-                var retarget = path.join(targetPath, path.basename(sourcePath));
-            }
-            //遍历源递归
-            var s_files = fs.readdirSync(sourcePath);
-            s_files.forEach(function (file) {
-                copySync(path.join(sourcePath, file), retarget);
-            });
-        }
-
-    }
-
-    try {
-        copySync(req.query.sourcePath, req.query.targetPath);
-    } catch (err) {
-        next(err);
-        return;
-    }
-
+    var err = copySync(req.query.sourcePath, req.query.targetPath);
+    if (err) { return next(err); }
     res.status(200).json({ message: "success" });
 });
+
+router.get("/cp", function (req, res) {
+    var task = new Task(function (resolve, reject) {
+        var err = copySync(req.query.sourcePath, req.query.targetPath);
+        if (err) { return reject(err); }
+        resolve("success");
+    });
+    taskQueue.Enqueue(task);
+    task.Start();
+    res.status(202).json({ message: "success", TaskId: task.TaskId });
+});
+
+function copySync(sourcePath, targetPath) {
+    var s_stats = fs.statSync(sourcePath);
+
+    if (s_stats.isFile()) {
+        //!!缺个判断目标
+        //判断目标是否存在
+        if (fs.existsSync(targetPath)) {
+            //判断目标是不是目录
+            var t_stats = fs.statSync(targetPath);
+            if (t_stats.isDirectory()) {
+                //retarget到新建文件
+                var retarget = path.join(targetPath, path.basename(sourcePath));
+            }
+        } else {
+            //判断目标所在目录是否存在
+            if (!fs.existsSync(path.dirname(targetPath))) {
+                return "No such file or directory \"" + path.dirname(targetPath) + "\"";
+            }
+        }
+        var rs = fs.createReadStream(sourcePath);
+        if (retarget == null) {
+            var ws = fs.createWriteStream(targetPath);
+        } else {
+            var ws = fs.createWriteStream(retarget);
+        }
+        rs.pipe(ws);
+        rs.close();
+        ws.close();
+        //!!加个优化
+    } else {
+        //判断目标是否存在
+        if (fs.existsSync(targetPath)) {
+            //判断目标是不是目录
+            var t_stats = fs.statSync(targetPath);
+            if (t_stats.isFile()) {
+                return "cannot overwrite non-directory \"" + path.normalize(targetPath) + "\" with directory \"" + path.normalize(sourcePath) + "\"";
+            }
+            //判断目标目录是否存在同名目录
+            if (!fs.existsSync(path.join(targetPath, path.basename(sourcePath)))) {
+                fs.mkdirSync(path.join(targetPath, path.basename(sourcePath)));
+            }
+        } else {
+            //判断目标所在目录是否存在
+            if (fs.existsSync(path.dirname(targetPath))) {
+                fs.mkdirSync(targetPath);
+                var renameFlag = true;
+            } else {
+                return "No such file or directory \"" + path.dirname(targetPath) + "\"";
+            }
+        }
+        //如果目标被重命名
+        if (renameFlag) {
+            var retarget = targetPath;
+        } else {
+            var retarget = path.join(targetPath, path.basename(sourcePath));
+        }
+        //遍历源递归
+        var s_files = fs.readdirSync(sourcePath);
+        s_files.forEach(function (file) {
+            copySync(path.join(sourcePath, file), retarget);
+        });
+    }
+
+}
+
 
 //删除
 router.get("/rmSync", function (req, res) {
