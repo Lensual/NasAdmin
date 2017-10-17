@@ -12,12 +12,12 @@ var Task = taskQueue.Task;
 
 //读文件夹
 router.get("/readDirSync", function (req, res, next) {
-    // 检查路径是否在root内
-    if (!checkPathAtRoot(config.storage.root, req.query.path)) {
-        throw new Error("Access denied: path not in storage root");
-    }
+    // 检查路径是否在root内 !!bug
+    //if (!checkPathAtRoot(config.storage.root, req.query.path)) {
+    //    throw new Error("Access denied: path not in storage root");
+    //}
     readDir(config.storage.root + req.query.path, function (files, err) {
-        if (err) { return next(err) }
+        if (err) { return next(err); }
         res.status(200).json({ message: "success", files });
     });
 });
@@ -241,7 +241,29 @@ function removeSync(sourcePath, recursive) {
     }
 }
 
+//上传
+router.get("/newUploadTask", function (req, res) {
+    var task = new Task(function (resolve, reject) {
+        fs.open(res.query.path, 'w+', function (err, fd) {
+            if (err) { return reject(err); }
+            task.fd = fd;
+            fs.ftruncate(fd, req.query.len, function (err) {
+                if (err) { return reject(err); }
+                resolve("success");
+            });
+        });
 
+    });
+    taskQueue.Enqueue(task);
+    task.Start();
+    res.status(202).json({ message: "success", TaskId: task.TaskId });
+});
 
+router.put("/upload", function (req, res) {
+    var task = taskQueue.GetTask(req.query.taskId);
+    fs.write(task.fd, req.body, req.body.start, req.body.end - req.body.start, function (err, written, str) {
+        if (err) { return next(err); }
+    });
+});
 
 exports.Router = router;
