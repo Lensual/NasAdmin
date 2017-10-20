@@ -6,7 +6,7 @@ var log4js = require("log4js");
 log4js.configure(config.log4js);
 global.logger = log4js.getLogger("default");
 
-//include express & bodyParse
+//include express
 var express = require("express");
 var app = express();
 

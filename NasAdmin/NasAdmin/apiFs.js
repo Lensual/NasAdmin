@@ -5,6 +5,8 @@ var router = express.Router();
 
 var fs = require("fs");
 var path = require("path");
+var bodyParser = require("body-parser");
+
 
 var taskQueue = require("./apiTaskQueue")
 var Task = taskQueue.Task;
@@ -244,26 +246,33 @@ function removeSync(sourcePath, recursive) {
 //上传
 router.get("/newUploadTask", function (req, res) {
     var task = new Task(function (resolve, reject) {
-        fs.open(res.query.path, 'w+', function (err, fd) {
+        fs.open(path.join(config.storage.root, req.query.path), 'w+', function (err, fd) {
             if (err) { return reject(err); }
             task.fd = fd;
+            task.resolve = resolve;
+            task.reject = reject;
             fs.ftruncate(fd, req.query.len, function (err) {
                 if (err) { return reject(err); }
-                resolve("success");
+                res.status(202).json({ message: "success", TaskId: task.TaskId });
             });
         });
 
     });
     taskQueue.Enqueue(task);
     task.Start();
-    res.status(202).json({ message: "success", TaskId: task.TaskId });
 });
 
-router.put("/upload", function (req, res) {
+router.put("/upload", bodyParser.raw({ type: '*/*' }), function (req, res) {
     var task = taskQueue.GetTask(req.query.taskId);
-    fs.write(task.fd, req.body, req.body.start, req.body.end - req.body.start, function (err, written, str) {
-        if (err) { return next(err); }
+    
+    fs.write(task.fd, req.body, req.query.start, req.query.end - req.query.start, function (err, written, buffer) {
+        if (err) {
+            task.reject(err);
+            return next(err);
+        }
+        task.resolve("success");
     });
+    res.status(201).json({ message: "success", TaskId: task.TaskId });
 });
 
 exports.Router = router;
